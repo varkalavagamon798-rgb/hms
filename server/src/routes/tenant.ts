@@ -1,59 +1,95 @@
 import { Router, Response } from 'express';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest, authMiddleware } from '../middleware/auth';
+import { AppError } from '../middleware/errorHandler';
 
 const router = Router();
 
-// Mock hospital data
-const hospitals: Record<string, any> = {
-  hospital1: {
-    hospital_id: 'h-001',
-    hospital_name: 'Apollo Hospitals',
-    app_name: 'Apollo HMS',
-    primary_color: '#0057A8',
-    secondary_color: '#003876',
-    login_banner_url: 'https://example.com/banner.jpg',
-    login_tagline: 'Caring for life, enabled by technology.',
-    logo_url: '/public/logo_colour.png',
-    favicon_url: '/public/favicon.ico',
-    support_phone: '+1-800-HOSPITAL',
-    support_email: 'support@hospital.com',
-  },
-  default: {
-    hospital_id: 'h-001',
-    hospital_name: 'Default Hospital',
-    app_name: 'HMS Platform',
-    primary_color: '#2E75B6',
-    secondary_color: '#1B3A5C',
-    login_tagline: 'Unified Healthcare Management',
-    logo_url: '/public/logo_colour.png',
-    favicon_url: '/public/favicon.ico',
-    support_phone: '+1-800-SUPPORT',
-    support_email: 'support@hms.app',
-  },
-};
-
 /**
- * GET /tenants/branding
- * Get hospital branding information by subdomain
+ * GET /tenants/:tenantId
+ * Get tenant information (branding, configuration)
  */
-router.get('/branding', (req: AuthRequest, res: Response) => {
+router.get('/:tenantId', async (req: AuthRequest, res: Response) => {
   try {
-    const { subdomain } = req.query;
-    const tenantSubdomain = subdomain as string || 'default';
+    const { tenantId } = req.params;
 
-    const branding = hospitals[tenantSubdomain] || hospitals['default'];
+    // Mock tenant data - replace with actual database query
+    const tenantData = {
+      tenant_id: tenantId,
+      hospital_name: 'City General Hospital',
+      app_name: 'HMS Platform',
+      primary_color: '#2E75B6',
+      secondary_color: '#1B3A5C',
+      logo_url: 'https://example.com/logo.png',
+      support_email: 'support@hms.app',
+      login_tagline: 'Streamline every workflow — from patient registration to discharge — in one unified platform.',
+    };
 
     res.json({
       success: true,
-      data: branding,
+      data: tenantData,
     });
   } catch (error) {
-    console.error('Error fetching branding:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch branding',
-      code: 'BRANDING_ERROR',
+    if (error instanceof AppError) {
+      res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch tenant information',
+        code: 'TENANT_FETCH_ERROR',
+      });
+    }
+  }
+});
+
+/**
+ * POST /tenants
+ * Create a new tenant (admin only)
+ */
+router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    // Only super-admin can create tenants
+    if (req.user?.role !== 'super-admin') {
+      throw new AppError(403, 'Only super-admin can create tenants', 'FORBIDDEN');
+    }
+
+    const { hospital_name, app_name, primary_color, secondary_color } = req.body;
+
+    if (!hospital_name || !app_name) {
+      throw new AppError(400, 'Hospital name and app name are required', 'MISSING_FIELDS');
+    }
+
+    // Mock tenant creation - replace with actual database insert
+    const newTenant = {
+      tenant_id: `tenant-${Date.now()}`,
+      hospital_name,
+      app_name,
+      primary_color: primary_color || '#2E75B6',
+      secondary_color: secondary_color || '#1B3A5C',
+      created_at: new Date().toISOString(),
+    };
+
+    res.status(201).json({
+      success: true,
+      data: newTenant,
     });
+  } catch (error) {
+    if (error instanceof AppError) {
+      res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create tenant',
+        code: 'TENANT_CREATE_ERROR',
+      });
+    }
   }
 });
 
