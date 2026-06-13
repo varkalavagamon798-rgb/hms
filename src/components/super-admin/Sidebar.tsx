@@ -28,7 +28,7 @@ export const Sidebar: React.FC = () => {
     <aside className={cn('flex flex-col h-screen sticky top-0 transition-all duration-300 border-r border-[#D6EFF4] bg-white shadow-sm z-40', collapsed ? 'w-[72px]' : 'w-[240px]')}>
       <div className={cn('flex items-center gap-3 px-4 py-5 border-b border-[#D6EFF4]', collapsed && 'justify-center px-0')}>
         <div className="relative shrink-0 h-8 w-8">
-          <Image src={BRAND.logo} alt="MedSocio" fill className="object-contain" priority />
+          <Image src={BRAND.logo} alt="MedSocio"  fill className="object-contain" sizes = " (max-width: 768px) 100vw, 250px" priority />
         </div>
         {!collapsed && (
           <div>

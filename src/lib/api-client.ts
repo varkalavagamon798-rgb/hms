@@ -5,33 +5,21 @@ import type { AuthTokens } from '../types';
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30_000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true, // sends cookies cross-origin
 });
 
 // ─── Request Interceptor — Attach Token + Tenant ──────────────────────────────
 
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = Cookies.get(ACCESS_TOKEN_KEY);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    // Inject hospital subdomain for tenant resolution
-    if (typeof window !== 'undefined') {
-      const subdomain = window.location.hostname.split('.')[0];
-      config.headers['X-Tenant-Subdomain'] = subdomain;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
+// Add this interceptor to api-client.ts
+apiClient.interceptors.request.use((config) => {
+  const token = Cookies.get('hms_access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // ─── Response Interceptor — Token Refresh ────────────────────────────────────
 

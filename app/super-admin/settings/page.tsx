@@ -114,7 +114,7 @@ export default function SettingsPage() {
           <select className="rounded-xl border border-[#D6EFF4] bg-[#F4FAFB] px-4 py-2.5 text-sm text-[#0D2F36] focus:outline-none focus:ring-2 focus:ring-[#33ABC3]/30">
             <option>15 minutes</option>
             <option>30 minutes</option>
-            <option selected>60 minutes</option>
+            <option defaultValue="60 minutes">60 minutes</option>
             <option>4 hours</option>
           </select>
         </Field>
@@ -195,21 +195,21 @@ export default function SettingsPage() {
       >
         <Field label="Default Timezone">
           <select className="rounded-xl border border-[#D6EFF4] bg-[#F4FAFB] px-4 py-2.5 text-sm text-[#0D2F36] focus:outline-none focus:ring-2 focus:ring-[#33ABC3]/30 w-full">
-            <option selected>Asia/Kolkata (IST +05:30)</option>
+            <option defaultValue="Asia/Kolkata (IST +05:30)">Asia/Kolkata (IST +05:30)</option>
             <option>Asia/Dubai (GST +04:00)</option>
             <option>UTC</option>
           </select>
         </Field>
         <Field label="Default Currency">
           <select className="rounded-xl border border-[#D6EFF4] bg-[#F4FAFB] px-4 py-2.5 text-sm text-[#0D2F36] focus:outline-none focus:ring-2 focus:ring-[#33ABC3]/30 w-full">
-            <option selected>INR — Indian Rupee</option>
+            <option defaultValue="INR — Indian Rupee">INR — Indian Rupee</option>
             <option>USD — US Dollar</option>
             <option>AED — UAE Dirham</option>
           </select>
         </Field>
         <Field label="Date Format">
           <select className="rounded-xl border border-[#D6EFF4] bg-[#F4FAFB] px-4 py-2.5 text-sm text-[#0D2F36] focus:outline-none focus:ring-2 focus:ring-[#33ABC3]/30 w-full">
-            <option selected>DD/MM/YYYY</option>
+            <option defaultValue="DD/MM/YYYY">DD/MM/YYYY</option>
             <option>MM/DD/YYYY</option>
             <option>YYYY-MM-DD</option>
           </select>
